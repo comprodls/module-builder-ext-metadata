@@ -54,10 +54,11 @@ async function get(url, key){
                     'x-api-key': key
                 }
             }
+            syslog.info('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=HTTP_GET_REQUEST, get ' + ' fetch data for url = ' + url );
             request(options, function(err, res, body){
                 if(err){
-                syslog.error('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=HTTP_GET_REQUEST, get ' + ' for url = ' + url + JSON.stringify(err));
-                return resolve({});
+                    syslog.error('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=HTTP_GET_REQUEST, get ' + 'error for url = ' + url + JSON.stringify(err));
+                    return resolve({});
                 }
                 return resolve(JSON.parse(body));
             });
