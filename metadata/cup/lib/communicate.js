@@ -60,6 +60,10 @@ async function get(url, key){
                     syslog.error('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=HTTP_GET_REQUEST, get ' + 'error for url = ' + url + JSON.stringify(err));
                     return resolve({});
                 }
+                if(res.statusCode == 404){
+                    syslog.error('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=HTTP_GET_REQUEST, get ' + 'data not found for  url = ' + url );
+                    return resolve({});
+                }
                 return resolve(JSON.parse(body));
             });
         }
