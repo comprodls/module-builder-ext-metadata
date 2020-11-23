@@ -83,7 +83,6 @@ function fetchGetMetadataParameters(config, docs){
 async function getTagDetails(config, id) {
     try {
         syslog.info('SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_TAG_DETAILS, getTagDetails ' + 'received request to fetch tag for ' + id );
-        let externalMetadataModule = await getClientInstance(config.id);
          // get clientInstance
         let externalMetadataModule = await getClientInstance(config.id);
         // configure the external module
