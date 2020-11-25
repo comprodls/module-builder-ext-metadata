@@ -5,7 +5,7 @@ const categoryMap = require('./lib/category-map');
 const docsMethod = require('./lib/docs-method');
 
 /*********************************Global Variables******************************************************************/  
-let externalMetadataConfig = null;
+// let externalMetadataConfig = null;
 
 
 /*********************************Functions************************************************************************/  
@@ -18,7 +18,7 @@ let externalMetadataConfig = null;
  * @returns { Promise } Promise which gives category map / docs when resolved.
  * 
  */
-async function getMetadata(options){
+async function getMetadata(options, externalMetadataConfig){
     try {
         syslog.info('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_METADATA, getMetadata ' + 'received request to fetch metadata ');
         //if config is empty reject with Library not Initialized Error
@@ -46,30 +46,30 @@ async function getMetadata(options){
 }
 
 
-/** This method configures this library with passed config(apiKey, url, id).
- * @param { Object }  config  -  Config for Api endpoints.
- * @param { String }  config.apiKey  -  Key for API endpoint authentication.
- * @param { String }  config.url  -  MMA Endpoint base url.
- * @param { String }  config.id  -  Unique client id.
- * @returns {Promise} A promise which gets resolved on library initialization and if passed config is valid.
- */
-async function configure(config){
-    // validateConfig Method validates that the config passed have all the values required to intialize this library.
-    if(validateConfig(config)){
-        externalMetadataConfig = config;
-        return Promise.resolve();
-    }
-    else{
-        return Promise.reject(new Error('Configuration Error: Missing Values'));
-    }
-}
+// /** This method configures this library with passed config(apiKey, url, id).
+//  * @param { Object }  config  -  Config for Api endpoints.
+//  * @param { String }  config.apiKey  -  Key for API endpoint authentication.
+//  * @param { String }  config.url  -  MMA Endpoint base url.
+//  * @param { String }  config.id  -  Unique client id.
+//  * @returns {Promise} A promise which gets resolved on library initialization and if passed config is valid.
+//  */
+// async function configure(config){
+//     // validateConfig Method validates that the config passed have all the values required to intialize this library.
+//     if(validateConfig(config)){
+//         externalMetadataConfig = config;
+//         return Promise.resolve();
+//     }
+//     else{
+//         return Promise.reject(new Error('Configuration Error: Missing Values'));
+//     }
+// }
 
 /**
  * returns Proxy data for a term's proxy id.
  * @param {String} id - Proxy Id of a term.
  * @returns {Promise} Promise which gets resolved with term's proxy data.
  */
-async function getTagDetails(id){
+async function getTagDetails(id, externalMetadataConfig){
     try {
         syslog.info('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_TAG, getTagDetails ' + 'received request to fetch tag details for  ' + id);
         //if config is empty reject with Library not Initialized Error
@@ -94,4 +94,4 @@ async function getTagDetails(id){
 
 
 
-module.exports = { getMetadata, configure, getTagDetails }
+module.exports = { getMetadata,  getTagDetails }

@@ -21,7 +21,7 @@ let config = {
     }
 }
 
-unitTest.getExternalMetadata(config).then(res=>{
+unitTest.getExternalMetadata(config, false).then(res=>{
    console.log(res);
 }).catch(err=>{
     console.log(err);

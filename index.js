@@ -21,15 +21,15 @@ async function getExternalMetadata(config, docs){
     try{
         syslog.info('SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_EXTERNAL_METADATA, getExternalMetadata ' + 'received request to feth metadata for ' + config.id );
         let externalMetadataModule = await getClientInstance(config.id);
-        // configure the external module
-        await externalMetadataModule.configure(config.source); 
+        // // configure the external module
+        // await externalMetadataModule.configure(config.source); 
         // fetch parameters for external Metadata function.
         let parameters = fetchGetMetadataParameters(config, docs);
         if(!parameters){
             throw new Error('parameters for organization not found with id '+ config.id);
         }
         // call metadata function and return results.
-        let results  = await externalMetadataModule.getMetadata(...parameters);
+        let results  = await externalMetadataModule.getMetadata(...parameters, config.source);
         return Promise.resolve(results);
     }
     catch(err){
@@ -65,7 +65,7 @@ async function getClientInstance(clientId){
 function fetchGetMetadataParameters(config, docs){
     switch (config.id){
         case 'cup' : 
-            return [ { taxonomy: config['builder-mapping'].category.taxonomy, docs: docs || false } ];
+            return [ { taxonomy: config['builder-mapping'].category[config['builder-mapping'].category.id], docs: docs || false } ];
         default:
             return null;
     }
@@ -86,9 +86,9 @@ async function getTagDetails(config, id) {
          // get clientInstance
         let externalMetadataModule = await getClientInstance(config.id);
         // configure the external module
-        await externalMetadataModule.configure(config.source);
+        // await externalMetadataModule.configure(config.source);
         // call tag details function
-        let result = await externalMetadataModule.getTagDetails(id);
+        let result = await externalMetadataModule.getTagDetails(id, config.source);
         return Promise.resolve(result);
     }
     catch(err){
