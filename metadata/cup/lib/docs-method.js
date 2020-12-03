@@ -86,7 +86,7 @@ function transform(collection, colorMap){
             // loop for terms inside a taxonomy
             for(let j = 0; j < terms.length; j++){
                 // store termid vs their proxyid in a termProxyMap.
-                termProxyMap[terms[j].id] = terms[j].proxyId;
+                termProxyMap[terms[j].id] = terms[j].masterId;
                 // convert each term into builder doc format.
                 response.push(convertToBuilderFormat(terms[j], collection[i].id, termProxyMap, colorMap));
             }
@@ -122,7 +122,7 @@ function convertToBuilderFormat(item, taxonomyId, termProxyMap, colorMap){
     if taxonomy put _id = id of taxonomy
     if term put _id = proxy id of that term 
     */
-    format._id  =  item.label == 'taxonomy' ? item.id : item.proxyId;
+    format._id  =  item.label == 'taxonomy' ? item.id : item.masterId;
     // put rest of data into meta node
     format.meta = item;
     format.meta.name = item.name;

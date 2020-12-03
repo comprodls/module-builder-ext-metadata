@@ -163,28 +163,28 @@ function createTree(termsArray, pid){
             // loop into items on childparentmap parentid-node
             for(let i=1; i< childParentMap[parentId].length; i++) {
 
-                recMap[childParentMap[parentId][i]["proxyId"]] = {
+                recMap[childParentMap[parentId][i]["masterId"]] = {
                     "doc" : childParentMap[parentId][i],
                     "tags" : {}
                 }
 
-                recMap[childParentMap[parentId][i]["proxyId"]].doc['last-modified'] = {
+                recMap[childParentMap[parentId][i]["masterId"]].doc['last-modified'] = {
                     by: "",
                     time: null
                 }
 
-                recMap[childParentMap[parentId][i]["proxyId"]].doc["meta"] =  {
-                    "name":  recMap[childParentMap[parentId][i]["proxyId"]].doc.name,
+                recMap[childParentMap[parentId][i]["masterId"]].doc["meta"] =  {
+                    "name":  recMap[childParentMap[parentId][i]["masterId"]].doc.name,
                     "theme": ""
                 }
                 // put parentid = pid , pid here is passed parent id of currentitem
-                recMap[childParentMap[parentId][i]["proxyId"]].doc.parentid =  pid;
-                // put _id = proxyid ,//for terms only
-                recMap[childParentMap[parentId][i]["proxyId"]].doc["_id"] =   recMap[childParentMap[parentId][i]["proxyId"]].doc.proxyId;
+                recMap[childParentMap[parentId][i]["masterId"]].doc.parentid =  pid;
+                // put _id = masterId ,//for terms only
+                recMap[childParentMap[parentId][i]["masterId"]].doc["_id"] =   recMap[childParentMap[parentId][i]["masterId"]].doc.masterId;
                 //delete duplicate parentId
-                delete recMap[childParentMap[parentId][i]["proxyId"]].doc.parentId;
+                delete recMap[childParentMap[parentId][i]["masterId"]].doc.parentId;
                 // call getchildren again for current term childs with updated parameters.
-                getChildren(recMap[childParentMap[parentId][i]["proxyId"]].tags, childParentMap[parentId][i]["id"], childParentMap[parentId][i]["proxyId"]);   
+                getChildren(recMap[childParentMap[parentId][i]["masterId"]].tags, childParentMap[parentId][i]["id"], childParentMap[parentId][i]["masterId"]);   
             }
         }
     }
