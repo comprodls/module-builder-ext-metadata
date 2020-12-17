@@ -4,8 +4,9 @@
   "description": "",
   "main": "build/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -rf build && babel . -d  build --ignore node_modules"
+    "test": "npm run build && node build/test/test.js",
+    "build": "rm -rf build && babel . -d  build --ignore node_modules",
+    "preinstall":"npm run build"
   },
   "repository": {
     "type": "git",
