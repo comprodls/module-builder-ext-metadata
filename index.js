@@ -19,7 +19,7 @@ const organizationMap = {
  */
 async function getExternalMetadata(config, docs){
     try{
-        syslog.info('SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_EXTERNAL_METADATA, getExternalMetadata ' + 'received request to feth metadata for ' + config.id );
+        console.log('SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_EXTERNAL_METADATA, getExternalMetadata ' + 'received request to feth metadata for ' + config.id );
         let externalMetadataModule = await getClientInstance(config.id);
         // // configure the external module
         // await externalMetadataModule.configure(config.source); 
@@ -33,7 +33,7 @@ async function getExternalMetadata(config, docs){
         return Promise.resolve(results);
     }
     catch(err){
-        syslog.error('SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_EXTERNAL_METADATA, getExternalMetadata ' + JSON.stringify(err));
+        console.log('SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_EXTERNAL_METADATA, getExternalMetadata ' + JSON.stringify(err));
         return Promise.reject(err);
     }
 
@@ -82,7 +82,7 @@ function fetchGetMetadataParameters(config, docs){
  */
 async function getTagDetails(config, id) {
     try {
-        syslog.info('SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_TAG_DETAILS, getTagDetails ' + 'received request to fetch tag for ' + id );
+        console.log('SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_TAG_DETAILS, getTagDetails ' + 'received request to fetch tag for ' + id );
          // get clientInstance
         let externalMetadataModule = await getClientInstance(config.id);
         // configure the external module
@@ -92,7 +92,7 @@ async function getTagDetails(config, id) {
         return Promise.resolve(result);
     }
     catch(err){
-        syslog.error( 'SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_TAG_DETAILS, getExternalMetadata ' + JSON.stringify(err));
+        console.log( 'SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_TAG_DETAILS, getExternalMetadata ' + JSON.stringify(err));
         return Promise.reject(err);
     }
 }

@@ -20,15 +20,15 @@ const docsMethod = require('./lib/docs-method');
  */
 async function getMetadata(options, externalMetadataConfig){
     try {
-        syslog.info('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_METADATA, getMetadata ' + 'received request to fetch metadata ');
+        console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_METADATA, getMetadata ' + 'received request to fetch metadata ');
         //if config is empty reject with Library not Initialized Error
         if(!externalMetadataConfig){
-          syslog.error('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_METADATA, getMetadata ' + 'Library is not initialized i.e configuration missing ');
+          console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_METADATA, getMetadata ' + 'Library is not initialized i.e configuration missing ');
           return Promise.reject({ success: false , err: new Error("Library is not initialized ")})
         }
         //Check if Taxonomy list is empty
         if(!options || !options.taxonomy || options.taxonomy.length == 0 ){
-            syslog.error('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_METADATA, getMetadata ' + 'Taxonomy List is Empty or Not Present');
+            console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_METADATA, getMetadata ' + 'Taxonomy List is Empty or Not Present');
             return Promise.reject({ success:false , err: "Taxonomy List is Empty or Not Present" })
         }
         let response ;
@@ -71,15 +71,15 @@ async function getMetadata(options, externalMetadataConfig){
  */
 async function getTagDetails(id, externalMetadataConfig){
     try {
-        syslog.info('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_TAG, getTagDetails ' + 'received request to fetch tag details for  ' + id);
+        console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_TAG, getTagDetails ' + 'received request to fetch tag details for  ' + id);
         //if config is empty reject with Library not Initialized Error
         if(!externalMetadataConfig){
-            syslog.error('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_TAG, getTagDetails ' + 'Library is not initialized i.e configuration missing ');
+            console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_TAG, getTagDetails ' + 'Library is not initialized i.e configuration missing ');
             return Promise.reject({ success: false , err: new Error("Library is not initialized ")})
         }
         // If empty proxyId is passed reject with a error.
         if(!id){
-            syslog.error('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_TAG, getTagDetails ' + 'proxyId is empty');
+            console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_TAG, getTagDetails ' + 'proxyId is empty');
             return Promise.reject(new Error ("Please provide a valid proxy id"));
         }
         // Fetch a Term Proxy by its id and return it.
