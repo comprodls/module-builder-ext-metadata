@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npm run build && node build/test/test.js",
     "build": "rm -rf build && babel . -d  build --ignore node_modules",
-    "preinstall":"npm run build"
+    "postinstall":"npm run build"
   },
   "repository": {
     "type": "git",
