@@ -53,7 +53,7 @@ async function getFlattenedMap(taxonomies, config){
 
         // Create a flatmap of taxonomies result and store it key-value pairs in response object where key = taxonomy_id
         // and value = taxonomy data from API
-        let result = await Promise.allSettled(promiseArray);
+        let result = await Promise.all(promiseArray);
         for (let i = 0; i < result.length; i++){
             if(result[i].data && result[i].data.id){
                 response[result[i].data.id] = result[i].data;
