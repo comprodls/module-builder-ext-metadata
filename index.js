@@ -18,10 +18,9 @@ const organizationMap = {
  * @param {Boolean} suppressErrors used to decide whether to return null against a failed taxonomy or not .
  * @returns {Promise} docs collection or categoryMap when resolved
  */
-async function getExternalMetadata(config, docs, suppressErrors){
+async function getExternalMetadata(config, docs, returnErrors){
     try{
         // The returnErrors variable is used to decide whether to return null against a failed taxonomy or not . 
-        let returnErrors = !suppressErrors || false ; 
         
         console.log('SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_EXTERNAL_METADATA, getExternalMetadata ' + 'received request to feth metadata for ' + config.id );
         let externalMetadataModule = await getClientInstance(config.id);
