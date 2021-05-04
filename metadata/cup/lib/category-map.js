@@ -14,12 +14,13 @@ const communicate = require('./communicate');
  * @param { String }  config.apiKey  -  Key for API endpoint authentication.
  * @param { String }  config.url  -  MMA Endpoint base url.
  * @param { String }  config.id  -  Unique client id.
+ * @param { boolean } returnErrors used to decide whether to return null against a failed taxonomy or not .
  * @returns { Promise } Promise which gets resolved categoryMap.
  */
-async function getCategoryMap(options, config){
+async function getCategoryMap(options, config, returnErrors){
     try {
         // Fetch data from provided taxonomies id and create flatMap from it.
-        let flattenedMap = await getFlattenedMap(options.taxonomy, config);
+        let flattenedMap = await getFlattenedMap(options.taxonomy, config, returnErrors);
         // Convert the FlatMap obtained from above step and convert it into Hierarchical Map (Builder Friendly Format).
         let response = createMapFromFlattened(flattenedMap);
         return Promise.resolve(response);
@@ -39,15 +40,17 @@ async function getCategoryMap(options, config){
  * @param { String }  config.id  -  Unique client id.
  * @returns {Promise} Promise which gets resolved with taxonomy flatmap and corresponding color flatmap.
  */
-async function getFlattenedMap(taxonomies, config){
+async function getFlattenedMap(taxonomies, config, returnErrors){
     try{
         let response = {};
         let promiseArray = [];
         let colorMap = {};
+        let taxonomyArray = [];
         // Loop over taxonomy list and make a call for each taxonomy id and store the promise in an promiseArray.
         // Similarly make ColorMap in which every taxonomy id has a corresponding theme.
         for(let taxonomyId in taxonomies ){
             colorMap[taxonomyId] = taxonomies[taxonomyId].theme || 'black'; // Chosen black as a fallback color
+            taxonomyArray.push(taxonomyId);
             promiseArray.push(communicate.getLatestTaxonomyById(config, taxonomyId));
         }
 
@@ -58,12 +61,14 @@ async function getFlattenedMap(taxonomies, config){
             if(result[i].data && result[i].data.id){
                 response[result[i].data.id] = result[i].data;
             }
+            else if(returnErrors){ // if the current taxonomy does not have any data and returnErrors parameter is true then set null against the taxonomy
+                response[taxonomyArray[i]] = null;
+            }
         }
         // return the flattend taxonomies data and colorMap
         return Promise.resolve({ taxonomies:response, colorMap:colorMap });
     }
-    catch(err){
-
+    catch(err){    
         return Promise.reject(err);
     }
 }
@@ -84,6 +89,12 @@ function createMapFromFlattened(flattenedMap){
     for(let id in data) {
         // put current iteration data into currentTax.
         let currentTax = data[id];
+
+        if(!currentTax){ // if currentTaxonomy data is set as null then do not create its map and keep the data null as it is
+            data[id] = null;
+            continue;
+        }
+        
         let transformedTax = {};
         // Create transformedTax to return in builder format 
         // fill transformedTax.doc with whole data of current taxonomy.
