@@ -70,7 +70,6 @@ async function get(url, key){
                 }
 
                 console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=HTTP_GET_REQUEST, get ' + 'Error occured for this url =  ' + url );
-                console.log(res);
                 return resolve({});
             });
         }

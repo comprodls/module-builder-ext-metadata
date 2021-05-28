@@ -21,7 +21,6 @@ const organizationMap = {
 async function getExternalMetadata(config, docs, returnErrors){
     try{
         // The returnErrors variable is used to decide whether to return null against a failed taxonomy or not . 
-        
         console.log('SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_EXTERNAL_METADATA, getExternalMetadata ' + 'received request to feth metadata for ' + config.id );
         let externalMetadataModule = await getClientInstance(config.id);
         // // configure the external module
@@ -95,7 +94,7 @@ async function getTagDetails(config, id) {
         return Promise.resolve(result);
     }
     catch(err){
-        console.log( 'SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_TAG_DETAILS, getExternalMetadata ' + JSON.stringify(err));
+        console.log('SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_TAG_DETAILS, getExternalMetadata ' + JSON.stringify(err));
         return Promise.reject(err);
     }
 }
