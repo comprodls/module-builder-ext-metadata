@@ -15,10 +15,12 @@ const organizationMap = {
  * @property  config.source --> Urls and secrets needed by the external module.
  * @property  config.['builder-mapping'] --> Mapping information of external metadata to builder metadata.
  * @param {Boolean} docs whether to fetch docs or categoryMap. Fallback is categoryMap.
+ * @param {Boolean} suppressErrors used to decide whether to return null against a failed taxonomy or not .
  * @returns {Promise} docs collection or categoryMap when resolved
  */
-async function getExternalMetadata(config, docs){
+async function getExternalMetadata(config, docs, returnErrors){
     try{
+        // The returnErrors variable is used to decide whether to return null against a failed taxonomy or not . 
         console.log('SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_EXTERNAL_METADATA, getExternalMetadata ' + 'received request to feth metadata for ' + config.id );
         let externalMetadataModule = await getClientInstance(config.id);
         // // configure the external module
@@ -29,7 +31,7 @@ async function getExternalMetadata(config, docs){
             throw new Error('parameters for organization not found with id '+ config.id);
         }
         // call metadata function and return results.
-        let results  = await externalMetadataModule.getMetadata(...parameters, config.source);
+        let results  = await externalMetadataModule.getMetadata(...parameters, config.source, returnErrors);
         return Promise.resolve(results);
     }
     catch(err){
@@ -92,7 +94,7 @@ async function getTagDetails(config, id) {
         return Promise.resolve(result);
     }
     catch(err){
-        console.log( 'SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_TAG_DETAILS, getExternalMetadata ' + JSON.stringify(err));
+        console.log('SOURCE=EXTERNAL_METADATA_MODULE, TYPE=GET_TAG_DETAILS, getExternalMetadata ' + JSON.stringify(err));
         return Promise.reject(err);
     }
 }

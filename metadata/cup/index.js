@@ -15,10 +15,11 @@ const docsMethod = require('./lib/docs-method');
  * @param { Object }  options - Options.
  * @param { Object }  options.taxonomy - Pass taxonomy list .
  * @param { boolean } options.docs - Set true to fetch all docs and false to fetch categoryMap.
+ * @param { boolean } returnErrors used to decide whether to return null against a failed taxonomy or not .
  * @returns { Promise } Promise which gives category map / docs when resolved.
  * 
  */
-async function getMetadata(options, externalMetadataConfig){
+async function getMetadata(options, externalMetadataConfig, returnErrors){
     try {
         console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_METADATA, getMetadata ' + 'received request to fetch metadata ');
         //if config is empty reject with Library not Initialized Error
@@ -37,7 +38,7 @@ async function getMetadata(options, externalMetadataConfig){
             response = await docsMethod.getAllDocs(options, externalMetadataConfig);
         }
         else{ // else make a categoryMap from metadata and return it
-            response = await categoryMap.getCategoryMap(options, externalMetadataConfig);
+            response = await categoryMap.getCategoryMap(options, externalMetadataConfig, returnErrors);
         }
         return Promise.resolve({ success:true, data:response });
     } catch(err){
