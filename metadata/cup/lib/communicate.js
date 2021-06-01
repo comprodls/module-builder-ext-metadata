@@ -60,11 +60,17 @@ async function get(url, key){
                     console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=HTTP_GET_REQUEST, get ' + 'error for url = ' + url + JSON.stringify(err));
                     return resolve({});
                 }
+                if(res.statusCode == 200){
+                    return resolve(JSON.parse(body));
+                }
+
                 if(res.statusCode == 404){
                     console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=HTTP_GET_REQUEST, get ' + 'data not found for  url = ' + url );
                     return resolve({});
                 }
-                return resolve(JSON.parse(body));
+
+                console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=HTTP_GET_REQUEST, get ' + 'Error occured for this url =  ' + url );
+                return resolve({});
             });
         }
         catch(err){
