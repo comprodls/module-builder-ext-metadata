@@ -3,6 +3,7 @@ const { validateConfig } = require('./lib/helper');
 const communicate = require('./lib/communicate');
 const categoryMap = require('./lib/category-map');
 const docsMethod = require('./lib/docs-method');
+const lomMap = require('./lib/lom-map');
 
 /*********************************Global Variables******************************************************************/  
 // let externalMetadataConfig = null;
@@ -23,7 +24,7 @@ async function getMetadata(options, externalMetadataConfig, returnErrors){
     try {
         console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_METADATA, getMetadata ' + 'received request to fetch metadata ');
         //if config is empty reject with Library not Initialized Error
-        if(!externalMetadataConfig){
+        if(!externalMetadataConfig.source){
           console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_METADATA, getMetadata ' + 'Library is not initialized i.e configuration missing ');
           return Promise.reject({ success: false , err: new Error("Library is not initialized ")})
         }
@@ -32,15 +33,22 @@ async function getMetadata(options, externalMetadataConfig, returnErrors){
             console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_METADATA, getMetadata ' + 'Taxonomy List is Empty or Not Present');
             return Promise.reject({ success:false , err: "Taxonomy List is Empty or Not Present" })
         }
-        let response ;
+        let categoryMapResponse;
+        let lomMapResponse;
         // if docs flag is true fetch all docs and convert into builder format and return 
         if(options.docs && options.docs == true){
-            response = await docsMethod.getAllDocs(options, externalMetadataConfig);
+            categoryMapResponse = await docsMethod.getAllDocs(options, externalMetadataConfig.source);
         }
         else{ // else make a categoryMap from metadata and return it
-            response = await categoryMap.getCategoryMap(options, externalMetadataConfig, returnErrors);
+            categoryMapResponse = await categoryMap.getCategoryMap(options, externalMetadataConfig.source, returnErrors);
         }
-        return Promise.resolve({ success:true, data:response });
+        // if lom node is present, get the lom map.
+        if(externalMetadataConfig["builder-mapping"] && externalMetadataConfig["builder-mapping"]["lom"] && externalMetadataConfig["builder-mapping"]["lom"].id){
+            externalMetadataConfig.source.url = "https://63ad1c4834c46cd7ae908f2d.mockapi.io/v1/resources"; // dummy url
+            lomMapResponse = await lomMap.getLomMap(externalMetadataConfig.source);
+        }
+
+        return Promise.resolve({ success:true, categoryMap: categoryMapResponse, lomMap: lomMapResponse });
     } catch(err){
         return Promise.reject({ success:false, err : err });
     }
