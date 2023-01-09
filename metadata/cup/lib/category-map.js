@@ -1,5 +1,6 @@
 /*********************************Library References****************************************************************/ 
 const communicate = require('./communicate');
+const fs = require('fs');
 
 /*********************************Global Variables******************************************************************/  
 
@@ -100,7 +101,7 @@ function createMapFromFlattened(flattenedMap){
         // fill transformedTax.doc with whole data of current taxonomy.
         transformedTax.doc = currentTax;
         // fill transformedTax.tags with n level heirarchy of taxonomy terms.
-        transformedTax.tags = createTree(currentTax.terms, id);   
+        transformedTax.tags = createTree(currentTax.terms, id);
         // fill last modified information
         transformedTax.doc["last-modified"] = { time: null, by: "" };
         // fill theme and name info into meta node.

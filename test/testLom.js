@@ -70,7 +70,6 @@ unitTest.getExternalMetadata(config, false, true).then(res => {
 })
 
 
-
 // let options = {
 //     url: config.source.url+'/lom',
 //     method: 'get',

@@ -6193,14 +6193,38 @@
 				"type": "lom_node",
 				"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
 				"name": "Educational",
-				"description": "An example LOM node",
 				"parent_id": "",
-				"data_type": "langstring",
-				"size": 3,
-				"order": "ordered",
-				"example": "This is an example LOM node",
 				"value": "This is an example value",
-				"value_space": "string",
+				"profiles": [
+					{
+						"id": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82a7e6",
+						"type": "lom_profile",
+						"name": "English Profile",
+						"description": "An example LOM profile pointing to an MMA Term",
+						"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+						"data_type": "term",
+						"size": 4,
+						"parentId": "",
+						"order": "unordered",
+						"example": "Silent Reading",
+						"value": "d4a033ab-53b9-418f-9973-191097dc80b4",
+						"value_space": "string"
+					},
+					{
+						"id": "2c984b01-a761-4afd-8519-b708e45ddc38",
+						"type": "lom_profile",
+						"name": "Science Profile",
+						"description": "An example LOM profile of duration type",
+						"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+						"data_type": "duration",
+						"size": "max 3",
+						"parentId": "",
+						"order": "ordered",
+						"example": "P10m45s",
+						"value": "P3m58s",
+						"value_space": "string"
+					}
+				],
 				"last-modified": {
 					"time": null,
 					"by": ""
@@ -6209,62 +6233,72 @@
 					"name": "Educational",
 					"description": "An example LOM node",
 					"data_type": "langstring"
-				},
-				"parentid": 0,
-				"_id": "0a552eafe-dc6e-49b5-bb07-4ff93a703482"
+				}
 			},
-			"lom": {
-				"1b9fc6ff-c4a6-4ac9-ba19-38fb8f82a7e6": {
+			"lom_nodes": {
+				"0a552eafe-dc6e-49b5-bb07-4ff93a345fesc": {
 					"doc": {
-						"id": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82a7e6",
-						"type": "lom_profile",
-						"name": "English Profile",
-						"description": "An example LOM profile pointing to an MMA Term",
+						"id": "0a552eafe-dc6e-49b5-bb07-4ff93a345fesc",
+						"type": "lom_node",
+						"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+						"name": "Speaking",
 						"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
-						"data_type": "term",
-						"size": 4,
-						"order": "unordered",
-						"example": "Silent Reading",
-						"value": "d4a033ab-53b9-418f-9973-191097dc80b4",
-						"value_space": "string",
+						"value": "This is an example value",
 						"profiles": [],
 						"last-modified": {
-							"by": "",
-							"time": null
+							"time": null,
+							"by": ""
 						},
 						"meta": {
-							"name": "English Profile"
-						},
-						"parentid": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
-						"_id": ""
+							"name": "Speaking",
+							"description": "An example LOM node",
+							"data_type": "langstring"
+						}
 					},
-					"lom": {}
+					"lom_nodes": {
+						"er6frdyf-dc6e-49b5-bb07-4ff9334f2": {
+							"doc": {
+								"id": "er6frdyf-dc6e-49b5-bb07-4ff9334f2",
+								"type": "lom_node",
+								"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+								"name": "Advance",
+								"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a345fesc",
+								"value": "This is an example value",
+								"profiles": [],
+								"last-modified": {
+									"time": null,
+									"by": ""
+								},
+								"meta": {
+									"name": "Advance",
+									"description": "An example LOM node",
+									"data_type": "langstring"
+								}
+							},
+							"lom_nodes": {}
+						}
+					}
 				},
-				"2c984b01-a761-4afd-8519-b708e45ddc38": {
+				"er6frdyf-dc6e-49b5-bb07-4ff93a703482": {
 					"doc": {
-						"id": "2c984b01-a761-4afd-8519-b708e45ddc38",
-						"type": "lom_profile",
-						"name": "Science Profile",
-						"description": "An example LOM profile of duration type",
+						"id": "er6frdyf-dc6e-49b5-bb07-4ff93a703482",
+						"type": "lom_node",
+						"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+						"name": "Writing",
 						"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
-						"data_type": "duration",
-						"size": "max 3",
-						"order": "ordered",
-						"example": "P10m45s",
-						"value": "P3m58s",
-						"value_space": "string",
+						"value": "This is an example value",
 						"profiles": [],
 						"last-modified": {
-							"by": "",
-							"time": null
+							"time": null,
+							"by": ""
 						},
 						"meta": {
-							"name": "Science Profile"
-						},
-						"parentid": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
-						"_id": ""
+							"name": "Writing",
+							"description": "An example LOM node",
+							"data_type": "langstring"
+						}
 					},
-					"lom": {}
+					"lom_nodes": {}
 				}
 			}
 		},
@@ -6274,14 +6308,38 @@
 				"type": "lom_node",
 				"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
 				"name": "Language",
-				"description": "An example LOM node",
 				"parent_id": "",
-				"data_type": "langstring",
-				"size": 3,
-				"order": "ordered",
-				"example": "This is an example LOM node",
 				"value": "This is an example value",
-				"value_space": "string",
+				"profiles": [
+					{
+						"id": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82adv44",
+						"type": "lom_profile",
+						"name": "Hindi",
+						"description": "An example LOM profile pointing to an MMA Term",
+						"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
+						"data_type": "term",
+						"size": 4,
+						"parentId": "",
+						"order": "unordered",
+						"example": "Hindi",
+						"value": "d4a033ab-53b9-418f-9973-191097dc80b4",
+						"value_space": "string"
+					},
+					{
+						"id": "2c984b01-a761-4afd-8519-b708e45dda12",
+						"type": "lom_profile",
+						"name": "Gujrati",
+						"description": "An example LOM profile of duration type",
+						"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
+						"data_type": "duration",
+						"size": "max 3",
+						"parentId": "",
+						"order": "ordered",
+						"example": "P10m45s",
+						"value": "P3m58s",
+						"value_space": "string"
+					}
+				],
 				"last-modified": {
 					"time": null,
 					"by": ""
@@ -6290,13 +6348,70 @@
 					"name": "Language",
 					"description": "An example LOM node",
 					"data_type": "langstring"
-				},
-				"parentid": 0,
-				"_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578"
+				}
 			},
-			"lom": {
-				"1b9fc6ff-c4a6-4ac9-ba19-38fb8f82adv44": {
-					"doc": {
+			"lom_nodes": {}
+		},
+		"0a552eafe-dc6e-49b5-bb07-4ff93a34546": {
+			"doc": {
+				"id": "0a552eafe-dc6e-49b5-bb07-4ff93a34546",
+				"type": "lom_node",
+				"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+				"name": "Entertainment",
+				"parent_id": "",
+				"value": "This is an example value",
+				"profiles": [
+					{
+						"id": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82a7e6",
+						"type": "lom_profile",
+						"name": "English Profile",
+						"description": "An example LOM profile pointing to an MMA Term",
+						"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+						"data_type": "term",
+						"size": 4,
+						"parentId": "",
+						"order": "unordered",
+						"example": "Silent Reading",
+						"value": "d4a033ab-53b9-418f-9973-191097dc80b4",
+						"value_space": "string"
+					},
+					{
+						"id": "2c984b01-a761-4afd-8519-b708e45ddc38",
+						"type": "lom_profile",
+						"name": "Science Profile",
+						"description": "An example LOM profile of duration type",
+						"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+						"data_type": "duration",
+						"size": "max 3",
+						"parentId": "",
+						"order": "ordered",
+						"example": "P10m45s",
+						"value": "P3m58s",
+						"value_space": "string"
+					}
+				],
+				"last-modified": {
+					"time": null,
+					"by": ""
+				},
+				"meta": {
+					"name": "Entertainment",
+					"description": "An example LOM node",
+					"data_type": "langstring"
+				}
+			},
+			"lom_nodes": {}
+		},
+		"0a552eafe-dc6e-49b5-bb07-4ff93a34erdf6": {
+			"doc": {
+				"id": "0a552eafe-dc6e-49b5-bb07-4ff93a34erdf6",
+				"type": "lom_node",
+				"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+				"name": "Sports",
+				"parent_id": "",
+				"value": "This is an example value",
+				"profiles": [
+					{
 						"id": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82adv44",
 						"type": "lom_profile",
 						"name": "Hindi",
@@ -6304,25 +6419,13 @@
 						"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
 						"data_type": "term",
 						"size": 4,
+						"parentId": "",
 						"order": "unordered",
 						"example": "Hindi",
 						"value": "d4a033ab-53b9-418f-9973-191097dc80b4",
-						"value_space": "string",
-						"profiles": [],
-						"last-modified": {
-							"by": "",
-							"time": null
-						},
-						"meta": {
-							"name": "Hindi"
-						},
-						"parentid": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
-						"_id": ""
+						"value_space": "string"
 					},
-					"lom": {}
-				},
-				"2c984b01-a761-4afd-8519-b708e45dda12": {
-					"doc": {
+					{
 						"id": "2c984b01-a761-4afd-8519-b708e45dda12",
 						"type": "lom_profile",
 						"name": "Gujrati",
@@ -6330,50 +6433,124 @@
 						"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
 						"data_type": "duration",
 						"size": "max 3",
+						"parentId": "",
 						"order": "ordered",
 						"example": "P10m45s",
 						"value": "P3m58s",
-						"value_space": "string",
-						"profiles": [],
-						"last-modified": {
-							"by": "",
-							"time": null
-						},
-						"meta": {
-							"name": "Gujrati"
-						},
-						"parentid": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
-						"_id": ""
-					},
-					"lom": {}
+						"value_space": "string"
+					}
+				],
+				"last-modified": {
+					"time": null,
+					"by": ""
 				},
-				"2c984b01-a761-4afd88519-b708e45d2343": {
-					"doc": {
-						"id": "2c984b01-a761-4afd88519-b708e45d2343",
+				"meta": {
+					"name": "Sports",
+					"description": "An example LOM node",
+					"data_type": "langstring"
+				}
+			},
+			"lom_nodes": {}
+		},
+		"0a552eafe-dc6e-49b5-bb07df-b5vfb452": {
+			"doc": {
+				"id": "0a552eafe-dc6e-49b5-bb07df-b5vfb452",
+				"type": "lom_node",
+				"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+				"name": "Speaking",
+				"parent_id": "",
+				"value": "This is an example value",
+				"profiles": [
+					{
+						"id": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82a7e6",
 						"type": "lom_profile",
-						"name": "North Hindi",
+						"name": "English Profile",
+						"description": "An example LOM profile pointing to an MMA Term",
+						"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
+						"data_type": "term",
+						"size": 4,
+						"parentId": "",
+						"order": "unordered",
+						"example": "Silent Reading",
+						"value": "d4a033ab-53b9-418f-9973-191097dc80b4",
+						"value_space": "string"
+					},
+					{
+						"id": "2c984b01-a761-4afd-8519-b708e45ddc38",
+						"type": "lom_profile",
+						"name": "Science Profile",
 						"description": "An example LOM profile of duration type",
-						"parent_id": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82adv44",
+						"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
 						"data_type": "duration",
 						"size": "max 3",
+						"parentId": "",
 						"order": "ordered",
 						"example": "P10m45s",
-						"value": "P3m58st",
-						"value_space": "string",
-						"profiles": [],
-						"last-modified": {
-							"by": "",
-							"time": null
-						},
-						"meta": {
-							"name": "North Hindi"
-						},
-						"parentid": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82adv44",
-						"_id": ""
-					},
-					"lom": {}
+						"value": "P3m58s",
+						"value_space": "string"
+					}
+				],
+				"last-modified": {
+					"time": null,
+					"by": ""
+				},
+				"meta": {
+					"name": "Speaking",
+					"description": "An example LOM node",
+					"data_type": "langstring"
 				}
-			}
+			},
+			"lom_nodes": {}
+		},
+		"0a552eafe-dc6e-49b5-bb07-4fdg4655v": {
+			"doc": {
+				"id": "0a552eafe-dc6e-49b5-bb07-4fdg4655v",
+				"type": "lom_node",
+				"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+				"name": "Music",
+				"parent_id": "",
+				"value": "This is an example value",
+				"profiles": [
+					{
+						"id": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82adv44",
+						"type": "lom_profile",
+						"name": "Hindi",
+						"description": "An example LOM profile pointing to an MMA Term",
+						"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
+						"data_type": "term",
+						"size": 4,
+						"parentId": "",
+						"order": "unordered",
+						"example": "Hindi",
+						"value": "d4a033ab-53b9-418f-9973-191097dc80b4",
+						"value_space": "string"
+					},
+					{
+						"id": "2c984b01-a761-4afd-8519-b708e45dda12",
+						"type": "lom_profile",
+						"name": "Gujrati",
+						"description": "An example LOM profile of duration type",
+						"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
+						"data_type": "duration",
+						"size": "max 3",
+						"parentId": "",
+						"order": "ordered",
+						"example": "P10m45s",
+						"value": "P3m58s",
+						"value_space": "string"
+					}
+				],
+				"last-modified": {
+					"time": null,
+					"by": ""
+				},
+				"meta": {
+					"name": "Music",
+					"description": "An example LOM node",
+					"data_type": "langstring"
+				}
+			},
+			"lom_nodes": {}
 		}
 	}
 }

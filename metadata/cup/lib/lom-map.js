@@ -1,5 +1,6 @@
 /*********************************Library References****************************************************************/
 const communicate = require('./communicate');
+const fs = require('fs');
 
 /*********************************Global Variables******************************************************************/
 
@@ -15,9 +16,11 @@ async function getLomMap(config) {
     try {
 
         let flattenedMap = await getFlattenedMap(config);
+        // let stream = fs.createWriteStream(process.cwd() + '/getMetadataResponse.json');
+        // stream.write(JSON.stringify(flattenedMap, null, '\t'));
         // console.log("flattenedMap: ", flattenedMap);
         // Convert the FlatMap obtained from above step and convert it into Hierarchical Map (Builder Friendly Format).
-        let response = createMapFromFlattened(flattenedMap);
+        let response = createTreeFromFlattened(flattenedMap);
         // console.log("lomMap: ", response);
         return Promise.resolve(response);
     } catch (err) {
@@ -41,6 +44,15 @@ async function getFlattenedMap(config) {
 
         for (let i = 0; i < result.data.length; i++) {
             if (result.data[i] && result.data[i].id) {
+
+                result.data[i]['last-modified'] = { time: null, by: "" };
+                result.data[i]['meta'] = { name: result.data[i].name, description: result.data[i].description, data_type: result.data[i].data_type};
+                delete result.data[i].description;
+                delete result.data[i].data_type;
+                delete result.data[i].size;
+                delete result.data[i].order;
+                delete result.data[i].example;
+                delete result.data[i].value_space;
                 response[result.data[i].id] = result.data[i];
             }
         }
@@ -54,131 +66,415 @@ async function getFlattenedMap(config) {
 }
 
 
-/**
- * returns builder-friendly lomMap Heirarchy.
- * @param { Object }  flattenedMap - Lom data flatmap.
- * @returns { Object } lomMap in builder format.
- */
-function createMapFromFlattened(flattenedMap) {
-    let data = flattenedMap.loms;
-
-    // console.log(data);
-    // loop on flattened loms data and transform it into builder format
-    for (let id in data) {
-
-        // console.log(id, "+++", data);
-
-        // put current iteration data into currentLom.
-        let currentLom = data[id];
-
-        let transformedLom = {};
-
-        // Create transformedLom to return in builder format 
-        // fill transformedLom.doc with whole data of current lom.
-        transformedLom.doc = currentLom;
-        // fill transformedLom.lom with n level heirarchy of lom profiles.
-        currentLom.profiles = currentLom.profiles || {};
-        transformedLom.lom = createTree(currentLom.profiles, id);
-        // fill last modified information
-        transformedLom.doc["last-modified"] = { time: null, by: "" };
-        // fill theme and name info into meta node.
-        transformedLom.doc.meta = { name: currentLom.name, description: currentLom.description, data_type: currentLom.data_type }
-        // put parentid = 0 for Lomonomies as they are on top level of hierarchy
-        transformedLom.doc.parentid = 0;
-        // put _id = id for Lomonmy 
-        transformedLom.doc['_id'] = id;
-        // delete profiles and id from the lom doc data as they are redundant now
-        delete transformedLom.doc.profiles;
-        delete data[id];
-        // replace old lom data with transformed lom data.
-        data[id] = transformedLom;
-    }
-    return data;
-}
-
-
-/**
- * Create hierarchy for Profiles of a lom such as (Parent lom >> Child lom) 
- * @param {Array} profilesArray - Array of profiles data.
- * @param { String } pid - parentId
- * @returns { Object } n-level hierarchy of profiles of a lom
- */
-function createTree(profilesArray, pid) {
-    let recMap = {}
-    let childParentMap = {};
-    // loop for each profiles
-    for (let i = 0; i < profilesArray.length; i++) {
-        // if childParentMap does not contain a node with currentProfiles parentid.
-        if (!childParentMap[profilesArray[i].parentId]) {
-            // if currentProfiles parentid is "" (i.e root level profile ).
-            if (profilesArray[i].parentId == "") {
-                // push the profile data  with 0 as key as it is root level profile.
+ function createTreeFromFlattened(flattenedMap){
+    let lomsArray = flattenedMap.loms;
+    var recMap = {}
+    var childParentMap = {};
+    // loop for each lom
+    
+    for(let i in lomsArray) {
+        // if childParentMap does not contain a node with currentTerm parentid.
+        if(!childParentMap[lomsArray[i].parent_id]) {
+            // if currentTerm parentid is "" (i.e root level lom ).
+            if(lomsArray[i].parent_id == ""){
+                // push the lom data  with 0 as key as it is root level lom.
                 childParentMap['0'] = childParentMap['0'] || [];
-                childParentMap['0'].push(profilesArray[i]);
+                childParentMap['0'].push(lomsArray[i]);
             }
-            else {
-                // if parentid is not '' then create a new empty array in childParent map with current profile parentid.
-                childParentMap[profilesArray[i].parentId] = [];
+            else{
+                // if parentid is not '' then create a new empty array in childParent map with current lom parentid.
+                childParentMap[lomsArray[i].parent_id] =  [];
             }
         }
 
-        // if current profile parentid is not "" then push current profile into childParent map against its parentid.
-        if (profilesArray[i].parentId != "") {
-            childParentMap[profilesArray[i].parentId].push(profilesArray[i]);
+        // if current lom parentid is not "" then push current lom into childParent map against its parentid.
+        if(lomsArray[i].parent_id != ""){
+            childParentMap[lomsArray[i].parent_id].push(lomsArray[i]);
         }
-        // if childParent does not contain a node with profile id then create a empty array node with key as profile id.
-        if (!childParentMap[profilesArray[i]["id"]]) {
-            childParentMap[profilesArray[i]["id"]] = [];
+        // if childParent does not contain a node with lom id then create a empty array node with key as lom id.
+        if(!childParentMap[lomsArray[i]["id"]]) {
+            childParentMap[lomsArray[i]["id"]] = [];
         }
-        // push the current profile in front against the profile id in childParent map.
-        childParentMap[profilesArray[i]["id"]].unshift(profilesArray[i]);
+        // push the current lom in front against the lom id in childParent map.
+        childParentMap[lomsArray[i]["id"]].unshift(lomsArray[i]);
     }
+
     /* create root level(hidden from user) which has id = 0 */
     childParentMap[0].unshift(
         {
-            "id": "0",
-            "meta": {
-                "name": "Zero"
+            "id" : "0",
+            "meta" : {
+                "name" : "Zero"
             }
         }
     );
+    // console.log(">>", childParentMap);
     // call getChildren to make a n-level hierarchy and fill it into recMap. 
-    // console.log(childParentMap);
-    getChildren(recMap, 0, pid);
-
-    function getChildren(recMap, parentId, pid) {
+    getChildren(recMap, 0);
+   
+    function getChildren(recMap, parentId) {
         // if the childparent map has a node with passed parent id 
-        childParentMap[parentId] = childParentMap[parentId] || [];
-        if (childParentMap[parentId].length) {
+        // console.log(childParentMap);
+        if(childParentMap[parentId].length) {
             // loop into items on childparentmap parentid-node
-            for (let i = 1; i < childParentMap[parentId].length; i++) {
+            for(let i=1; i< childParentMap[parentId].length; i++) {
 
                 recMap[childParentMap[parentId][i]["id"]] = {
-                    "doc": childParentMap[parentId][i],
-                    "lom": {}
+                    "doc" : childParentMap[parentId][i],
+                    "lom_nodes" : {}
                 }
-
-                recMap[childParentMap[parentId][i]["id"]].doc['last-modified'] = {
-                    by: "",
-                    time: null
-                }
-
-                recMap[childParentMap[parentId][i]["id"]].doc["meta"] = {
-                    "name": recMap[childParentMap[parentId][i]["id"]].doc.name,
-                }
-                // put parentid = pid , pid here is passed parent id of currentitem
-                recMap[childParentMap[parentId][i]["id"]].doc.parentid = recMap[childParentMap[parentId][i]["id"]].doc.parent_id;
-                // put _id = parentId ,//for profiles only
-                recMap[childParentMap[parentId][i]["id"]].doc["_id"] = recMap[childParentMap[parentId][i]["id"]].doc.parentId;
-                //delete duplicate parentId
-                delete recMap[childParentMap[parentId][i]["id"]].doc.parentId;
-                // call getchildren again for current profile childs with updated parameters.
-                // console.log(recMap);
-                getChildren(recMap[childParentMap[parentId][i]["id"]].profiles, childParentMap[parentId][i]["id"], childParentMap[parentId][i]["id"]);
+                
+                // console.log("->", recMap);
+                // call getchildren again for current lom childs with updated parameters.
+                getChildren(recMap[childParentMap[parentId][i]["id"]].lom_nodes, childParentMap[parentId][i]["id"]);   
             }
         }
     }
+
     return recMap;
 }
 
+
 module.exports = { getLomMap }
+
+let map = {
+	"loms": {
+		"0a552eafe-dc6e-49b5-bb07-4ff93a703482": {
+			"id": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+			"type": "lom_node",
+			"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+			"name": "Educational",
+			"parent_id": "",
+			"value": "This is an example value",
+			"profiles": [
+				{
+					"id": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82a7e6",
+					"type": "lom_profile",
+					"name": "English Profile",
+					"description": "An example LOM profile pointing to an MMA Term",
+					"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+					"data_type": "term",
+					"size": 4,
+					"parentId": "",
+					"order": "unordered",
+					"example": "Silent Reading",
+					"value": "d4a033ab-53b9-418f-9973-191097dc80b4",
+					"value_space": "string"
+				},
+				{
+					"id": "2c984b01-a761-4afd-8519-b708e45ddc38",
+					"type": "lom_profile",
+					"name": "Science Profile",
+					"description": "An example LOM profile of duration type",
+					"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+					"data_type": "duration",
+					"size": "max 3",
+					"parentId": "",
+					"order": "ordered",
+					"example": "P10m45s",
+					"value": "P3m58s",
+					"value_space": "string"
+				}
+			],
+			"last-modified": {
+				"time": null,
+				"by": ""
+			},
+			"meta": {
+				"name": "Educational",
+				"description": "An example LOM node",
+				"data_type": "langstring"
+			}
+		},
+		"0a552eafe-dc6e-49b5-bb07-4ff93a34578": {
+			"id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
+			"type": "lom_node",
+			"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+			"name": "Language",
+			"parent_id": "",
+			"value": "This is an example value",
+			"profiles": [
+				{
+					"id": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82adv44",
+					"type": "lom_profile",
+					"name": "Hindi",
+					"description": "An example LOM profile pointing to an MMA Term",
+					"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
+					"data_type": "term",
+					"size": 4,
+					"parentId": "",
+					"order": "unordered",
+					"example": "Hindi",
+					"value": "d4a033ab-53b9-418f-9973-191097dc80b4",
+					"value_space": "string"
+				},
+				{
+					"id": "2c984b01-a761-4afd-8519-b708e45dda12",
+					"type": "lom_profile",
+					"name": "Gujrati",
+					"description": "An example LOM profile of duration type",
+					"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
+					"data_type": "duration",
+					"size": "max 3",
+					"parentId": "",
+					"order": "ordered",
+					"example": "P10m45s",
+					"value": "P3m58s",
+					"value_space": "string"
+				}
+			],
+			"last-modified": {
+				"time": null,
+				"by": ""
+			},
+			"meta": {
+				"name": "Language",
+				"description": "An example LOM node",
+				"data_type": "langstring"
+			}
+		},
+		"0a552eafe-dc6e-49b5-bb07-4ff93a34546": {
+			"id": "0a552eafe-dc6e-49b5-bb07-4ff93a34546",
+			"type": "lom_node",
+			"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+			"name": "Entertainment",
+			"parent_id": "",
+			"value": "This is an example value",
+			"profiles": [
+				{
+					"id": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82a7e6",
+					"type": "lom_profile",
+					"name": "English Profile",
+					"description": "An example LOM profile pointing to an MMA Term",
+					"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+					"data_type": "term",
+					"size": 4,
+					"parentId": "",
+					"order": "unordered",
+					"example": "Silent Reading",
+					"value": "d4a033ab-53b9-418f-9973-191097dc80b4",
+					"value_space": "string"
+				},
+				{
+					"id": "2c984b01-a761-4afd-8519-b708e45ddc38",
+					"type": "lom_profile",
+					"name": "Science Profile",
+					"description": "An example LOM profile of duration type",
+					"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+					"data_type": "duration",
+					"size": "max 3",
+					"parentId": "",
+					"order": "ordered",
+					"example": "P10m45s",
+					"value": "P3m58s",
+					"value_space": "string"
+				}
+			],
+			"last-modified": {
+				"time": null,
+				"by": ""
+			},
+			"meta": {
+				"name": "Entertainment",
+				"description": "An example LOM node",
+				"data_type": "langstring"
+			}
+		},
+		"0a552eafe-dc6e-49b5-bb07-4ff93a34erdf6": {
+			"id": "0a552eafe-dc6e-49b5-bb07-4ff93a34erdf6",
+			"type": "lom_node",
+			"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+			"name": "Sports",
+			"parent_id": "",
+			"value": "This is an example value",
+			"profiles": [
+				{
+					"id": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82adv44",
+					"type": "lom_profile",
+					"name": "Hindi",
+					"description": "An example LOM profile pointing to an MMA Term",
+					"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
+					"data_type": "term",
+					"size": 4,
+					"parentId": "",
+					"order": "unordered",
+					"example": "Hindi",
+					"value": "d4a033ab-53b9-418f-9973-191097dc80b4",
+					"value_space": "string"
+				},
+				{
+					"id": "2c984b01-a761-4afd-8519-b708e45dda12",
+					"type": "lom_profile",
+					"name": "Gujrati",
+					"description": "An example LOM profile of duration type",
+					"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
+					"data_type": "duration",
+					"size": "max 3",
+					"parentId": "",
+					"order": "ordered",
+					"example": "P10m45s",
+					"value": "P3m58s",
+					"value_space": "string"
+				}
+			],
+			"last-modified": {
+				"time": null,
+				"by": ""
+			},
+			"meta": {
+				"name": "Sports",
+				"description": "An example LOM node",
+				"data_type": "langstring"
+			}
+		},
+		"0a552eafe-dc6e-49b5-bb07df-b5vfb452": {
+			"id": "0a552eafe-dc6e-49b5-bb07df-b5vfb452",
+			"type": "lom_node",
+			"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+			"name": "Speaking",
+			"parent_id": "",
+			"value": "This is an example value",
+			"profiles": [
+				{
+					"id": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82a7e6",
+					"type": "lom_profile",
+					"name": "English Profile",
+					"description": "An example LOM profile pointing to an MMA Term",
+					"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
+					"data_type": "term",
+					"size": 4,
+					"parentId": "",
+					"order": "unordered",
+					"example": "Silent Reading",
+					"value": "d4a033ab-53b9-418f-9973-191097dc80b4",
+					"value_space": "string"
+				},
+				{
+					"id": "2c984b01-a761-4afd-8519-b708e45ddc38",
+					"type": "lom_profile",
+					"name": "Science Profile",
+					"description": "An example LOM profile of duration type",
+					"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
+					"data_type": "duration",
+					"size": "max 3",
+					"parentId": "",
+					"order": "ordered",
+					"example": "P10m45s",
+					"value": "P3m58s",
+					"value_space": "string"
+				}
+			],
+			"last-modified": {
+				"time": null,
+				"by": ""
+			},
+			"meta": {
+				"name": "Speaking",
+				"description": "An example LOM node",
+				"data_type": "langstring"
+			}
+		},
+		"0a552eafe-dc6e-49b5-bb07-4fdg4655v": {
+			"id": "0a552eafe-dc6e-49b5-bb07-4fdg4655v",
+			"type": "lom_node",
+			"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+			"name": "Music",
+			"parent_id": "",
+			"value": "This is an example value",
+			"profiles": [
+				{
+					"id": "1b9fc6ff-c4a6-4ac9-ba19-38fb8f82adv44",
+					"type": "lom_profile",
+					"name": "Hindi",
+					"description": "An example LOM profile pointing to an MMA Term",
+					"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
+					"data_type": "term",
+					"size": 4,
+					"parentId": "",
+					"order": "unordered",
+					"example": "Hindi",
+					"value": "d4a033ab-53b9-418f-9973-191097dc80b4",
+					"value_space": "string"
+				},
+				{
+					"id": "2c984b01-a761-4afd-8519-b708e45dda12",
+					"type": "lom_profile",
+					"name": "Gujrati",
+					"description": "An example LOM profile of duration type",
+					"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a34578",
+					"data_type": "duration",
+					"size": "max 3",
+					"parentId": "",
+					"order": "ordered",
+					"example": "P10m45s",
+					"value": "P3m58s",
+					"value_space": "string"
+				}
+			],
+			"last-modified": {
+				"time": null,
+				"by": ""
+			},
+			"meta": {
+				"name": "Music",
+				"description": "An example LOM node",
+				"data_type": "langstring"
+			}
+		},
+		"0a552eafe-dc6e-49b5-bb07-4ff93a345fesc": {
+			"id": "0a552eafe-dc6e-49b5-bb07-4ff93a345fesc",
+			"type": "lom_node",
+			"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+			"name": "Speaking",
+			"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+			"value": "This is an example value",
+			"profiles": [],
+			"last-modified": {
+				"time": null,
+				"by": ""
+			},
+			"meta": {
+				"name": "Speaking",
+				"description": "An example LOM node",
+				"data_type": "langstring"
+			}
+		},
+		"er6frdyf-dc6e-49b5-bb07-4ff93a703482": {
+			"id": "er6frdyf-dc6e-49b5-bb07-4ff93a703482",
+			"type": "lom_node",
+			"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+			"name": "Writing",
+			"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+			"value": "This is an example value",
+			"profiles": [],
+			"last-modified": {
+				"time": null,
+				"by": ""
+			},
+			"meta": {
+				"name": "Writing",
+				"description": "An example LOM node",
+				"data_type": "langstring"
+			}
+		},
+		"er6frdyf-dc6e-49b5-bb07-4ff9334f2": {
+			"id": "er6frdyf-dc6e-49b5-bb07-4ff9334f2",
+			"type": "lom_node",
+			"url": "https://meta-xapi-dev.cambridgeone.org/v2/resources/lom/0a552eafe-dc6e-49b5-bb07-4ff93a703482",
+			"name": "Advance",
+			"parent_id": "0a552eafe-dc6e-49b5-bb07-4ff93a345fesc",
+			"value": "This is an example value",
+			"profiles": [],
+			"last-modified": {
+				"time": null,
+				"by": ""
+			},
+			"meta": {
+				"name": "Advance",
+				"description": "An example LOM node",
+				"data_type": "langstring"
+			}
+		}
+	}
+};
+createTreeFromFlattened(map);
