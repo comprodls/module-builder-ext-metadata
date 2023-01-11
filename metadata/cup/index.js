@@ -42,13 +42,19 @@ async function getMetadata(options, externalMetadataConfig, returnErrors){
         else{ // else make a categoryMap from metadata and return it
             categoryMapResponse = await categoryMap.getCategoryMap(options, externalMetadataConfig.source, returnErrors);
         }
-        // if lom node is present, get the lom map.
-        if(externalMetadataConfig["builder-mapping"] && externalMetadataConfig["builder-mapping"]["lom"] && externalMetadataConfig["builder-mapping"]["lom"].id){
-            externalMetadataConfig.source.url = "https://63ad1c4834c46cd7ae908f2d.mockapi.io/v1/resources"; // dummy url
-            lomMapResponse = await lomMap.getLomMap(externalMetadataConfig.source);
+        try {
+            // if lom node is present, get the lom map.
+            if(externalMetadataConfig["builder-mapping"] && externalMetadataConfig["builder-mapping"]["lom"] && externalMetadataConfig["builder-mapping"]["lom"].id){
+                externalMetadataConfig.source.url = "https://63ad1c4834c46cd7ae908f2d.mockapi.io/v1/resources"; // dummy url
+                lomMapResponse = await lomMap.getLomMap(externalMetadataConfig.source);
+                return Promise.resolve({ success:true, categoryMap: categoryMapResponse, lomMap: lomMapResponse });
+            }
+        }
+        catch(err) {
+            return Promise.resolve({ success:true, categoryMap: categoryMapResponse });
         }
 
-        return Promise.resolve({ success:true, categoryMap: categoryMapResponse, lomMap: lomMapResponse });
+        return Promise.resolve({ success:true, categoryMap: categoryMapResponse });
     } catch(err){
         return Promise.reject({ success:false, err : err });
     }
