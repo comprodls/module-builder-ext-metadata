@@ -47,6 +47,8 @@ async function getFlattenedMap(config) {
 
                 result.data[i]['last-modified'] = { time: null, by: "" };
                 result.data[i]['meta'] = { name: result.data[i].name, description: result.data[i].description, data_type: result.data[i].data_type};
+                result.data[i]['breadcrumbName'] = result.data[i].name;
+                result.data[i]['breadcrumbId'] = result.data[i].id;
                 delete result.data[i].description;
                 delete result.data[i].data_type;
                 delete result.data[i].size;
@@ -90,6 +92,8 @@ function createTreeFromFlattened(flattenedMap) {
 
             // if current lom parentid is not "" then push current lom into childParent map against its parentid.
             if (lomsArray[i].parent_id != "") {
+                lomsArray[i].breadcrumbId = lomsArray[lomsArray[i].parent_id].breadcrumbId + '>' + lomsArray[i].breadcrumbId;
+                lomsArray[i].breadcrumbName = lomsArray[lomsArray[i].parent_id].breadcrumbName + ' > ' + lomsArray[i].breadcrumbName;
                 childParentMap[lomsArray[i].parent_id].push(lomsArray[i]);
             }
             // if childParent does not contain a node with lom id then create a empty array node with key as lom id.
