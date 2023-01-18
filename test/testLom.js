@@ -68,15 +68,3 @@ unitTest.getExternalMetadata(config, false, true).then(res => {
 }).catch(err => {
     console.log(err);
 })
-
-
-// let options = {
-//     url: config.source.url+'/lom',
-//     method: 'get',
-//     headers:{
-//         'x-api-key': config.source.apiKey
-//     }
-// }
-// request(options, function(err, res, body){
-//     console.log(body);
-// });

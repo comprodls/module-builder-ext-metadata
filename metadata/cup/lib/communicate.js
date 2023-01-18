@@ -5,6 +5,13 @@ const request = require('request');
 
 /*********************************Functions************************************************************************/  
 
+function getTaxonomyById(config, id){
+    // generate url from base url for Latest Taxonomy
+    config.url = "https://run.mocky.io/v3/a3fc808f-d81a-4f5f-aae0-a0125edb6931";
+    let taxonomyUrl = config.url + '/taxonomies/' + id + '/latest';
+    return get( taxonomyUrl, config.apiKey );
+}
+
 /**
  * Function to get lom data.
  * @param { Object } config  -  Config for Api endpoints.
@@ -12,6 +19,7 @@ const request = require('request');
  */
 function getLom(config) {
     // generate url from base url for lom data.
+    config.url = "https://run.mocky.io/v3/b6b6843f-25ac-4fe8-b974-0dccef022f23"; // dummy url
     let lomUrl = config.url + '/lom';
     return get(lomUrl, config.apiKey);
 }
@@ -90,4 +98,4 @@ async function get(url, key){
     })
 }
 
-module.exports = { getLatestTaxonomyById, getProxyById, getLom }
+module.exports = { getLatestTaxonomyById, getProxyById, getLom, getTaxonomyById }

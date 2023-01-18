@@ -1,7 +1,7 @@
 /*********************************Library References****************************************************************/  
 const { validateConfig } = require('./lib/helper');
 const communicate = require('./lib/communicate');
-const categoryMap = require('./lib/category-map');
+const categoryMap = require('./lib/category-map2');
 const docsMethod = require('./lib/docs-method');
 const lomMap = require('./lib/lom-map');
 
@@ -45,7 +45,6 @@ async function getMetadata(options, externalMetadataConfig, returnErrors){
 
         // if lom node is present, get the lom map.
         if(externalMetadataConfig["builder-mapping"] && externalMetadataConfig["builder-mapping"]["lom"] && externalMetadataConfig["builder-mapping"]["lom"].id){
-            externalMetadataConfig.source.url = "https://63ad1c4834c46cd7ae908f2d.mockapi.io/v1/resources"; // dummy url
             lomMapResponse = await lomMap.getLomMap(externalMetadataConfig.source);
         }
 
