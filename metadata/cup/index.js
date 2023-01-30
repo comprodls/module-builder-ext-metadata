@@ -1,7 +1,7 @@
 /*********************************Library References****************************************************************/  
 const { validateConfig } = require('./lib/helper');
 const communicate = require('./lib/communicate');
-const categoryMap = require('./lib/category-map2');
+const categoryMap = require('./lib/category-map');
 const docsMethod = require('./lib/docs-method');
 const lomMap = require('./lib/lom-map');
 
@@ -33,7 +33,6 @@ async function getMetadata(options, externalMetadataConfig, returnErrors){
             console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_METADATA, getMetadata ' + 'Taxonomy List is Empty or Not Present');
             return Promise.reject({ success:false , err: "Taxonomy List is Empty or Not Present" })
         }
-        let categoryMapResponse;
         let lomMapResponse;
         // if docs flag is true fetch all docs and convert into builder format and return 
         if(options.docs && options.docs == true){
@@ -48,7 +47,7 @@ async function getMetadata(options, externalMetadataConfig, returnErrors){
             lomMapResponse = await lomMap.getLomMap(externalMetadataConfig.source);
         }
 
-        return Promise.resolve({ success:true, categoryMap: categoryMapResponse, lomMap: lomMapResponse });
+        return Promise.resolve({ success:true, categoryMap: response, lomMap: lomMapResponse });
        
     } catch(err){
         return Promise.reject({ success:false, err : err });

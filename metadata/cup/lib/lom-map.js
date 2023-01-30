@@ -1,6 +1,5 @@
 /*********************************Library References****************************************************************/
 const communicate = require('./communicate');
-const fs = require('fs');
 
 /*********************************Global Variables******************************************************************/
 
@@ -16,12 +15,9 @@ async function getLomMap(config) {
     try {
 
         let flattenedMap = await getFlattenedMap(config);
-        // let stream = fs.createWriteStream(process.cwd() + '/getMetadataResponse.json');
-        // stream.write(JSON.stringify(flattenedMap, null, '\t'));
-        // console.log("flattenedMap: ", flattenedMap);
+
         // Convert the FlatMap obtained from above step and convert it into Hierarchical Map (Builder Friendly Format).
         let response = createTreeFromFlattened(flattenedMap);
-        // console.log("lomMap: ", response);
         return Promise.resolve(response);
     } catch (err) {
         return Promise.reject(err);
@@ -113,13 +109,12 @@ function createTreeFromFlattened(flattenedMap) {
                 }
             }
         );
-        // console.log(">>", childParentMap);
+        
         // call getChildren to make a n-level hierarchy and fill it into recMap. 
         getChildren(recMap, 0);
 
         function getChildren(recMap, parentId) {
             // if the childparent map has a node with passed parent id 
-            // console.log(childParentMap);
             if (childParentMap[parentId].length) {
                 // loop into items on childparentmap parentid-node
                 for (let i = 1; i < childParentMap[parentId].length; i++) {
@@ -129,7 +124,6 @@ function createTreeFromFlattened(flattenedMap) {
                         "lom_nodes": {}
                     }
 
-                    // console.log("->", recMap);
                     // call getchildren again for current lom childs with updated parameters.
                     getChildren(recMap[childParentMap[parentId][i]["id"]].lom_nodes, childParentMap[parentId][i]["id"]);
                 }
