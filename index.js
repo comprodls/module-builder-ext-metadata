@@ -31,7 +31,7 @@ async function getExternalMetadata(config, docs, returnErrors){
             throw new Error('parameters for organization not found with id '+ config.id);
         }
         // call metadata function and return results.
-        let results  = await externalMetadataModule.getMetadata(...parameters, config.source, returnErrors);
+        let results  = await externalMetadataModule.getMetadata(...parameters, config, returnErrors);
         return Promise.resolve(results);
     }
     catch(err){

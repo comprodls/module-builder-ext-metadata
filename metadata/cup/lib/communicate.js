@@ -5,6 +5,18 @@ const request = require('request');
 
 /*********************************Functions************************************************************************/  
 
+/**
+ * Function to get lom data.
+ * @param { Object } config  -  Config for Api endpoints.
+ * @returns { Promise } Promise which gets resolved with latest lom data.
+ */
+function getLom(config) {
+    // generate url from base url for lom data.
+    config.url = "https://run.mocky.io/v3/b6b6843f-25ac-4fe8-b974-0dccef022f23"; // dummy url
+    let lomUrl = config.url + '/lom';
+    return get(lomUrl, config.apiKey);
+}
+
 
 /**
  * returns latest taxonomy data corresponding to taxonomy's id.
@@ -79,4 +91,4 @@ async function get(url, key){
     })
 }
 
-module.exports = { getLatestTaxonomyById, getProxyById }
+module.exports = { getLatestTaxonomyById, getProxyById, getLom }

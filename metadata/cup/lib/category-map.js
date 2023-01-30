@@ -100,7 +100,7 @@ function createMapFromFlattened(flattenedMap){
         // fill transformedTax.doc with whole data of current taxonomy.
         transformedTax.doc = currentTax;
         // fill transformedTax.tags with n level heirarchy of taxonomy terms.
-        transformedTax.tags = createTree(currentTax.terms, id);   
+        transformedTax.tags = createTree(currentTax.terms, id);
         // fill last modified information
         transformedTax.doc["last-modified"] = { time: null, by: "" };
         // fill theme and name info into meta node.
@@ -155,6 +155,7 @@ function createTree(termsArray, pid){
         // push the current term in front against the term id in childParent map.
         childParentMap[termsArray[i]["id"]].unshift(termsArray[i]);
     }
+    // console.log(">", childParentMap);
     /* create root level(hidden from user) which has id = 0 */
     childParentMap[0].unshift(
         {
@@ -164,6 +165,7 @@ function createTree(termsArray, pid){
             }
         }
     );
+    // console.log(">>", childParentMap);
     // call getChildren to make a n-level hierarchy and fill it into recMap. 
     getChildren(recMap, 0, pid);
    
@@ -193,6 +195,7 @@ function createTree(termsArray, pid){
                 recMap[childParentMap[parentId][i]["masterId"]].doc["_id"] =   recMap[childParentMap[parentId][i]["masterId"]].doc.masterId;
                 //delete duplicate parentId
                 delete recMap[childParentMap[parentId][i]["masterId"]].doc.parentId;
+                // console.log("->", recMap);
                 // call getchildren again for current term childs with updated parameters.
                 getChildren(recMap[childParentMap[parentId][i]["masterId"]].tags, childParentMap[parentId][i]["id"], childParentMap[parentId][i]["masterId"]);   
             }
