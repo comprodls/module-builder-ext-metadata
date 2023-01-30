@@ -34,12 +34,13 @@ async function getMetadata(options, externalMetadataConfig, returnErrors){
             return Promise.reject({ success:false , err: "Taxonomy List is Empty or Not Present" })
         }
         let lomMapResponse;
+        let response;
         // if docs flag is true fetch all docs and convert into builder format and return 
         if(options.docs && options.docs == true){
-            categoryMapResponse = await docsMethod.getAllDocs(options, externalMetadataConfig.source);
+            response = await docsMethod.getAllDocs(options, externalMetadataConfig.source);
         }
         else{ // else make a categoryMap from metadata and return it
-            categoryMapResponse = await categoryMap.getCategoryMap(options, externalMetadataConfig.source, returnErrors);
+            response = await categoryMap.getCategoryMap(options, externalMetadataConfig.source, returnErrors);
         }
 
         // if lom node is present, get the lom map.
