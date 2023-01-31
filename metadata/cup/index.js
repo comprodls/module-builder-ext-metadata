@@ -32,15 +32,15 @@ async function getMetadata(options, externalMetadataConfig, returnErrors){
             console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=GET_METADATA, getMetadata ' + 'Taxonomy List is Empty or Not Present');
             return Promise.reject({ success:false , err: "Taxonomy List is Empty or Not Present" })
         }
-        let response ;
+        let categoryMapResponse ;
         // if docs flag is true fetch all docs and convert into builder format and return 
         if(options.docs && options.docs == true){
-            response = await docsMethod.getAllDocs(options, externalMetadataConfig);
+            categoryMapResponse = await docsMethod.getAllDocs(options, externalMetadataConfig);
         }
         else{ // else make a categoryMap from metadata and return it
-            response = await categoryMap.getCategoryMap(options, externalMetadataConfig, returnErrors);
+            categoryMapResponse = await categoryMap.getCategoryMap(options, externalMetadataConfig, returnErrors);
         }
-        return Promise.resolve({ success:true, data:response });
+        return Promise.resolve({ success:true, categoryMap: categoryMapResponse });
     } catch(err){
         return Promise.reject({ success:false, err : err });
     }

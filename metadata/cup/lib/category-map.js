@@ -51,7 +51,7 @@ async function getFlattenedMap(taxonomies, config, returnErrors){
         for(let taxonomyId in taxonomies ){
             colorMap[taxonomyId] = taxonomies[taxonomyId].theme || 'black'; // Chosen black as a fallback color
             taxonomyArray.push(taxonomyId);
-            promiseArray.push(communicate.getLatestTaxonomyById(config, taxonomyId));
+            promiseArray.push(communicate.getTaxonomyById(config, taxonomyId));
         }
 
         // Create a flatmap of taxonomies result and store it key-value pairs in response object where key = taxonomy_id
@@ -87,32 +87,23 @@ function createMapFromFlattened(flattenedMap){
 
     // loop on flattened taxonomies data and transform it into builder format
     for(let id in data) {
-        // put current iteration data into currentTax.
-        let currentTax = data[id];
 
-        if(!currentTax){ // if currentTaxonomy data is set as null then do not create its map and keep the data null as it is
+        if(!data[id]){ // if currentTaxonomy data is set as null then do not create its map and keep the data null as it is
             data[id] = null;
             continue;
         }
-        
+
         let transformedTax = {};
-        // Create transformedTax to return in builder format 
-        // fill transformedTax.doc with whole data of current taxonomy.
-        transformedTax.doc = currentTax;
-        // fill transformedTax.tags with n level heirarchy of taxonomy terms.
-        transformedTax.tags = createTree(currentTax.terms, id);   
-        // fill last modified information
+        transformedTax.doc = data[id];
         transformedTax.doc["last-modified"] = { time: null, by: "" };
-        // fill theme and name info into meta node.
-        transformedTax.doc.meta = { name: currentTax.name, theme: colorMap[id], }
-        // put parentid = 0 for taxonomies as they are on top level of hierarchy
-        transformedTax.doc.parentid =  0;
-        // put _id = id for taxonmy 
-        transformedTax.doc['_id'] = id;
-        // delete terms and id from the taxonomy doc data as they are redundant now
-        delete transformedTax.doc.terms;
-        delete data[id];
-        // replace old taxonomy data with transformed taxonomy data.
+        transformedTax.doc.meta = { name: transformedTax.doc.name, theme: "", }
+
+        // fill transformedTax.tags with n level heirarchy of taxonomy terms.
+        transformedTax.tags = createTree(data[id].relationships);
+
+        delete transformedTax.doc.relationships;
+        delete transformedTax.doc.description;
+
         data[id] = transformedTax;
     }
     return data;
@@ -122,14 +113,38 @@ function createMapFromFlattened(flattenedMap){
 /**
  * Create hierarchy for terms of a Taxonomy such as (Parent term >> Child term) 
  * @param {Array} termsArray - Array of Terms data.
- * @param { String } pid - parentId
  * @returns { Object } n-level hierarchy of terms of a taxonomy
  */
-function createTree(termsArray, pid){
+function createTree(termsArray){
     var recMap = {}
     var childParentMap = {};
     // loop for each term
     for(let i=0; i< termsArray.length; i++) {
+
+        if (termsArray[i].weight === 1) {
+            continue;
+        }
+
+        // if childParent does not contain a node with term id then create a empty array node with key as term id.
+        if(!childParentMap[termsArray[i]["relationship_id"]]) {
+            childParentMap[termsArray[i]["relationship_id"]] = [];
+        }
+
+        if (termsArray[i].weight == 2) {
+            // push the current term in front against the term id in childParent map.
+            childParentMap[termsArray[i]["relationship_id"]].unshift(termsArray[i]);
+        }
+
+        termsArray[i].parentId = "";
+        // find parentId of term
+        if (termsArray[i].relationships) {
+            for (let rterm of termsArray[i].relationships) {
+                if (rterm.direction === "incoming" && rterm.weight === 3) {
+                    termsArray[i].parentId = rterm.relationship_id;
+                }
+            }
+        }
+
         // if childParentMap does not contain a node with currentTerm parentid.
         if(!childParentMap[termsArray[i].parentId]) {
             // if currentTerm parentid is "" (i.e root level term ).
@@ -148,53 +163,48 @@ function createTree(termsArray, pid){
         if(termsArray[i].parentId != ""){
             childParentMap[termsArray[i].parentId].push(termsArray[i]);
         }
-        // if childParent does not contain a node with term id then create a empty array node with key as term id.
-        if(!childParentMap[termsArray[i]["id"]]) {
-            childParentMap[termsArray[i]["id"]] = [];
-        }
-        // push the current term in front against the term id in childParent map.
-        childParentMap[termsArray[i]["id"]].unshift(termsArray[i]);
     }
+
     /* create root level(hidden from user) which has id = 0 */
     childParentMap[0].unshift(
         {
-            "id" : "0",
+            "relationship_id" : "0",
             "meta" : {
                 "name" : "Zero"
             }
         }
     );
+
     // call getChildren to make a n-level hierarchy and fill it into recMap. 
-    getChildren(recMap, 0, pid);
+    getChildren(recMap, 0);
    
-    function getChildren(recMap, parentId, pid) {
+    function getChildren(recMap, parentId) {
         // if the childparent map has a node with passed parent id 
         if(childParentMap[parentId].length) {
             // loop into items on childparentmap parentid-node
             for(let i=1; i< childParentMap[parentId].length; i++) {
 
-                recMap[childParentMap[parentId][i]["masterId"]] = {
-                    "doc" : childParentMap[parentId][i],
+                recMap[childParentMap[parentId][i]["relationship_id"]] = {
+                    "doc" : {},
                     "tags" : {}
                 }
 
-                recMap[childParentMap[parentId][i]["masterId"]].doc['last-modified'] = {
+                recMap[childParentMap[parentId][i]["relationship_id"]].doc["id"] = childParentMap[parentId][i].relationship_id;
+                recMap[childParentMap[parentId][i]["relationship_id"]].doc["name"] = childParentMap[parentId][i].name;
+
+                recMap[childParentMap[parentId][i]["relationship_id"]].doc['last-modified'] = {
                     by: "",
                     time: null
                 }
 
-                recMap[childParentMap[parentId][i]["masterId"]].doc["meta"] =  {
-                    "name":  recMap[childParentMap[parentId][i]["masterId"]].doc.name,
+                recMap[childParentMap[parentId][i]["relationship_id"]].doc["meta"] =  {
+                    "name":  childParentMap[parentId][i].name,
+                    "description": childParentMap[parentId][i].description,
                     "theme": ""
                 }
-                // put parentid = pid , pid here is passed parent id of currentitem
-                recMap[childParentMap[parentId][i]["masterId"]].doc.parentid =  pid;
-                // put _id = masterId ,//for terms only
-                recMap[childParentMap[parentId][i]["masterId"]].doc["_id"] =   recMap[childParentMap[parentId][i]["masterId"]].doc.masterId;
-                //delete duplicate parentId
-                delete recMap[childParentMap[parentId][i]["masterId"]].doc.parentId;
+
                 // call getchildren again for current term childs with updated parameters.
-                getChildren(recMap[childParentMap[parentId][i]["masterId"]].tags, childParentMap[parentId][i]["id"], childParentMap[parentId][i]["masterId"]);   
+                getChildren(recMap[childParentMap[parentId][i]["relationship_id"]].tags, childParentMap[parentId][i]["relationship_id"]);   
             }
         }
     }
