@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/comprodls/module-builder-ext-metadata#readme",
   "dependencies": {
-    "request": "^2.88.2"
+    "axios": "^1.4.0"
   }
 }

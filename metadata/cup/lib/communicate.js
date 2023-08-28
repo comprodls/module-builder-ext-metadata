@@ -1,5 +1,5 @@
 /*********************************Library References****************************************************************/ 
-const request = require('request');
+const axios = require('axios');
 
 /*********************************Global Variables******************************************************************/  
 
@@ -48,28 +48,25 @@ async function get(url, key){
     return new Promise((resolve,reject)=>{
         try {
             let options = {
-                url : url,
-                method : 'get',
                 headers:{
                     'x-api-key': key
                 }
             }
             console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=HTTP_GET_REQUEST, get ' + ' fetch data for url = ' + url );
-            request(options, function(err, res, body){
-                if(err){
-                    console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=HTTP_GET_REQUEST, get ' + 'error for url = ' + url + JSON.stringify(err));
-                    return resolve({});
-                }
-                if(res.statusCode == 200){
-                    return resolve(JSON.parse(body));
+            axios.get(url, options).then((res) => {
+                if(res.status == 200){
+                    return resolve(res.data);
                 }
 
-                if(res.statusCode == 404){
+                if(res.status == 404){
                     console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=HTTP_GET_REQUEST, get ' + 'data not found for  url = ' + url );
                     return resolve({});
                 }
 
                 console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=HTTP_GET_REQUEST, get ' + 'Error occured for this url =  ' + url );
+                return resolve({});
+            }).catch((err) => {
+                console.log('SOURCE=EXTERNAL_METADATA_MODULE_CUP, TYPE=HTTP_GET_REQUEST, get ' + 'error for url = ' + url + JSON.stringify(err));
                 return resolve({});
             });
         }
